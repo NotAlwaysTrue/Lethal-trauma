@@ -1,8 +1,6 @@
 using System;
 using System.Reflection;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 
 using Barotrauma;
@@ -14,6 +12,7 @@ namespace Lethaltrauma
   public partial class Mod : IAssemblyPlugin
   {
     public static Mod Instance { get; private set; }
+    public static Config Config { get; private set; } = new Config();
     public void Initialize()
     {
       Instance = this;
