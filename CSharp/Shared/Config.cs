@@ -21,9 +21,11 @@ namespace Lethaltrauma
     public float CrewHumanHealth { get; set; } = 1.0f;
     public float EnemyHumanHealth { get; set; } = 1.0f;
     public float MonsterHealth { get; set; } = 1.0f;
+
     public bool OverrideAim { get; set; } = false;
     public float AimSpeed { get; set; } = 1.0f;
     public float AimAccuracy { get; set; } = 1.0f;
+
     public bool NoReputationLossInMask { get; set; } = false;
     public float PressureKillDelay { get; set; } = 5.0f;
     public bool AllowFriendlyFire { get; set; } = true;

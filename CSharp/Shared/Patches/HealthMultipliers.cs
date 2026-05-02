@@ -25,7 +25,7 @@ namespace Lethaltrauma
       Utils.RunWithDelay(() => SetHealthMultiplier(__instance), 100);
     }
 
-    public static void UpdateHealthMultipliers()
+    public static void GlobalUpdateHealthMultipliers()
     {
       foreach (Character character in Character.CharacterList)
       {

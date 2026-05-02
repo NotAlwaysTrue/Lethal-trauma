@@ -4,12 +4,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Lethaltrauma Settings</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <script src="./script.js" defer></script>
 </head>
 
 <body>
-  bruh
+  <main>
+    <form name="settings">
+      <div class="settingsblock">
+        <div class="settingblockheader">Damage:</div>
+        <div class="subsettingblock">
+          <div class="setting">
+            <Label for="setting-RangedWeaponDamage">RangedWeaponDamage</Label>
+            <input id="setting-RangedWeaponDamage" name="RangedWeaponDamage" type="number" required min="0" max="100"
+              step="0.01" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-MeleeWeaponDamage">MeleeWeaponDamage</Label>
+            <input id="setting-MeleeWeaponDamage" name="MeleeWeaponDamage" type="number" required min="0" max="100"
+              step="0.01" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-ExplosionDamage">ExplosionDamage</Label>
+            <input id="setting-ExplosionDamage" name="ExplosionDamage" type="number" required min="0" max="100"
+              step="0.01" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-TurretDamage">TurretDamage</Label>
+            <input id="setting-TurretDamage" name="TurretDamage" type="number" required min="0" max="100" step="0.01" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-MonsterAttackDamage">MonsterAttackDamage</Label>
+            <input id="setting-MonsterAttackDamage" name="MonsterAttackDamage" type="number" required min="0" max="100"
+              step="0.01" />
+          </div>
+        </div>
+      </div>
+
+      <div class="settingsblock">
+        <div class="settingblockheader">Health Multipliers:</div>
+        <div class="subsettingblock">
+          <div class="setting">
+            <Label for="setting-OverrideHealthMult">Override Health Multipliers</Label>
+            <input id="setting-OverrideHealthMult" name="OverrideHealthMult" type="checkbox" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-CrewHumanHealth">Crew Human Health</Label>
+            <input id="setting-CrewHumanHealth" name="CrewHumanHealth" type="number" required min="0" max="100"
+              step="0.01" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-EnemyHumanHealth">Enemy Human Health</Label>
+            <input id="setting-EnemyHumanHealth" name="EnemyHumanHealth" type="number" required min="0" max="100"
+              step="0.01" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-MonsterHealth">Monster Health</Label>
+            <input id="setting-MonsterHealth" name="MonsterHealth" type="number" required min="0" max="100"
+              step="0.01" />
+          </div>
+        </div>
+      </div>
+
+      <div class="settingsblock">
+        <div class="settingblockheader">Aim:</div>
+        <div class="subsettingblock">
+          <div class="setting">
+            <Label for="setting-OverrideAim">Override Aim</Label>
+            <input id="setting-OverrideAim" name="OverrideAim" type="checkbox" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-AimSpeed">Aim Speed</Label>
+            <input id="setting-AimSpeed" name="AimSpeed" type="number" required min="0" max="100" step="0.01" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-AimAccuracy">Aim Accuracy</Label>
+            <input id="setting-AimAccuracy" name="AimAccuracy" type="number" required min="0" max="100" step="0.01" />
+          </div>
+        </div>
+      </div>
+
+      <div class="settingsblock">
+        <div class="settingblockheader">Structure Damage:</div>
+        <div class="subsettingblock">
+          <div class="setting">
+            <Label for="setting-WeaponStructureDamage">Weapon Structure Damage</Label>
+            <input id="setting-WeaponStructureDamage" name="WeaponStructureDamage" type="number" required min="0"
+              max="100" step="0.01" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-MonsterStructureDamage">Monster Structure Damage</Label>
+            <input id="setting-MonsterStructureDamage" name="MonsterStructureDamage" type="number" required min="0"
+              max="100" step="0.01" />
+          </div>
+        </div>
+      </div>
+
+      <div class="settingsblock">
+        <div class="settingblockheader">Misc:</div>
+        <div class="subsettingblock">
+          <div class="setting">
+            <Label for="setting-NoReputationLossInMask">NoReputationLossInMask</Label>
+            <input id="setting-NoReputationLossInMask" name="NoReputationLossInMask" type="checkbox" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-AllowFriendlyFire">AllowFriendlyFire</Label>
+            <input id="setting-AllowFriendlyFire" name="AllowFriendlyFire" type="checkbox" />
+          </div>
+
+          <div class="setting">
+            <Label for="setting-PressureKillDelay">PressureKillDelay</Label>
+            <input id="setting-PressureKillDelay" name="PressureKillDelay" type="number" required min="0" max="100"
+              step="0.01" />
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </main>
 </body>
 
 </html>

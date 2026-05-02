@@ -21,6 +21,8 @@ namespace Lethaltrauma
     };
     public static ContentPackage Package { get; private set; }
 
+    public Harmony Harmony { get; } = new Harmony("Lethaltrauma");
+
     public void Initialize()
     {
       Instance = this;
@@ -28,9 +30,33 @@ namespace Lethaltrauma
       PluginService.TryGetPackageForPlugin<Mod>(out ContentPackage package);
       Package = package;
 
-      Config.OnUpdated(() => Logger.Log(JsonSerializer.Serialize(Mod.Config)));
+      Config.Settings().CommandName = "lt";
+      Config.Settings().DeeplyReactive = true;
+      Config.OnUpdated(() => GlobalUpdate());
+      Config.OnPropChanged((key, value) => GlobalUpdate());
 
+      Config.UseStrategy(ConfigStrategy.MultiplayerBothSides);
+
+      PatchAll();
       InitializeProjSpecific();
+    }
+
+    public void GlobalUpdate()
+    {
+      BotAim_Patches.GlobalAimUpdate();
+      HealthMultipliers_Patches.GlobalUpdateHealthMultipliers();
+      PressureKillDelay_Patches.GlobalPressureKillDelay = Mod.Config.PressureKillDelay;
+    }
+
+    public void PatchAll()
+    {
+      BotAim_Patches.Patch(Harmony);
+      CrimesInMask_Patches.Patch(Harmony);
+      FriendlyFire_Patches.Patch(Harmony);
+      HealthMultipliers_Patches.Patch(Harmony);
+      PressureKillDelay_Patches.Patch(Harmony);
+      StructureDamage_Patches.Patch(Harmony);
+      WeaponDamage_Patches.Patch(Harmony);
     }
 
     public partial void InitializeProjSpecific();
@@ -41,6 +67,7 @@ namespace Lethaltrauma
     public void Dispose()
     {
       DisposeProjSpecific();
+      Harmony.UnpatchSelf();
       Instance = null;
     }
   }

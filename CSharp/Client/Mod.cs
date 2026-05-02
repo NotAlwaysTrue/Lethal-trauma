@@ -17,8 +17,7 @@ namespace Lethaltrauma
     public partial void InitializeProjSpecific()
     {
       PluginCommands.Add("lt_settings", (args) => SettingsServer.OpenSettingsPage());
-
-      SettingsServer.OpenSettingsPage();
+      SettingsServer.Start();
     }
 
     public partial void DisposeProjSpecific()
