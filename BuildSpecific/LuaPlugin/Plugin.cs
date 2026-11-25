@@ -3,6 +3,7 @@ using Barotrauma;
 using Microsoft.Xna.Framework;
 using Barotrauma.LuaCs;
 using System.Linq;
+using BaroJunk;
 
 namespace Lethaltrauma
 {
@@ -14,7 +15,7 @@ namespace Lethaltrauma
 
     public void DisposeBuildSpecific()
     {
-
+      PluginCommands.RemoveCommands();
     }
   }
 }
