@@ -124,13 +124,13 @@ namespace BaroJunk
 
     private void _Print(object msg, Color color)
     {
-      Plugin.DebugConsole?.NewMessage(Serializer.Serialize(msg), color);
+      DebugConsole.NewMessage(Serializer.Serialize(msg), color);
     }
 
     private void _PrintFilePath(Color color, string source, int lineNumber)
     {
       var fi = new FileInfo(source);
-      Plugin.DebugConsole?.NewMessage($"{fi.Directory.Name}/{fi.Name}:{lineNumber}", color);
+      DebugConsole.NewMessage($"{fi.Directory.Name}/{fi.Name}:{lineNumber}", color);
     }
 
     public void LogVars(object arg1,
