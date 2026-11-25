@@ -117,7 +117,7 @@
 
     <Error Code="MOD1001"
            Condition="!Exists('$(BarotraumaAssemblyToRead)')"
-           Text="Barotrauma assemblies were not found at '$(BarotraumaAssemblyToRead)'. Set BarotraumaExePath in CsProjectSource\UserBuildData.props (copy UserBuildData.props.example), or restore the publicized reference package." />
+           Text="Barotrauma assemblies were not found at '$(BarotraumaAssemblyToRead)'. Set BarotraumaExePath in UserBuildData.props (copy UserBuildData.props.example), or restore the publicized reference package." />
 
     <GetAssemblyIdentity AssemblyFiles="$(BarotraumaAssemblyToRead)">
       <Output TaskParameter="Assemblies" ItemName="GameAssemblyIdentity" />
