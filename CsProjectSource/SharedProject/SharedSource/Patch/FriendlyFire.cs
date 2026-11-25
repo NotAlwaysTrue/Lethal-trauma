@@ -13,16 +13,10 @@ using FarseerPhysics;
 
 namespace Lethaltrauma
 {
+  [HarmonyPatch(typeof(Character), nameof(Character.DamageLimb))]
   public static class FriendlyFire_Patches
   {
-    public static void Patch(Harmony harmony)
-    {
-      harmony.Patch(
-        original: typeof(Character).GetMethod("DamageLimb", AccessTools.all),
-        prefix: new HarmonyMethod(typeof(FriendlyFire_Patches).GetMethod("Character_DamageLimb_Replace"))
-      );
-    }
-
+    [HarmonyPrefix]
     public static bool Character_DamageLimb_Replace(Character __instance, ref AttackResult __result, Vector2 worldPosition, Limb hitLimb, IEnumerable<Affliction> afflictions, float stun, bool playSound, Vector2 attackImpulse, Character attacker = null, float damageMultiplier = 1, bool allowStacking = true, float penetration = 0f, bool shouldImplode = false, bool ignoreDamageOverlay = false, bool recalculateVitality = true)
     {
       Character _ = __instance;

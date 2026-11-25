@@ -9,16 +9,10 @@ using Microsoft.Xna.Framework;
 
 namespace Lethaltrauma
 {
+  [HarmonyPatch(typeof(HumanPrefab), nameof(HumanPrefab.InitializeCharacter))]
   public static class BotAim_Patches
   {
-    public static void Patch(Harmony harmony)
-    {
-      harmony.Patch(
-        original: typeof(HumanPrefab).GetMethod("InitializeCharacter", AccessTools.all),
-        postfix: new HarmonyMethod(typeof(BotAim_Patches).GetMethod("HumanPrefab_InitializeCharacter_Postfix"))
-      );
-    }
-
+    [HarmonyPostfix]
     public static void HumanPrefab_InitializeCharacter_Postfix(HumanPrefab __instance, Character npc, ISpatialEntity positionToStayIn = null)
     {
       if (Plugin.Config == null || !Plugin.Config.OverrideAim) return;

@@ -9,16 +9,13 @@ using Microsoft.Xna.Framework;
 
 namespace Lethaltrauma
 {
+  [HarmonyPatch]
   public static class PressureKillDelay_Patches
   {
-    public static void Patch(Harmony harmony)
-    {
-      harmony.Patch(
-        original: typeof(Character).GetConstructors(AccessTools.all)[0],
-        postfix: new HarmonyMethod(typeof(PressureKillDelay_Patches).GetMethod("Character_Constructor_Postfix"))
-      );
-    }
+    [HarmonyTargetMethod]
+    public static MethodBase Character_Constructor() => typeof(Character).GetConstructors(AccessTools.all)[0];
 
+    [HarmonyPostfix]
     public static void Character_Constructor_Postfix(Character __instance)
     {
       if (Plugin.Config == null) return;

@@ -77,13 +77,7 @@ namespace Lethaltrauma
 
     public void PatchAll()
     {
-      BotAim_Patches.Patch(Harmony);
-      CrimesInMask_Patches.Patch(Harmony);
-      FriendlyFire_Patches.Patch(Harmony);
-      HealthMultipliers_Patches.Patch(Harmony);
-      PressureKillDelay_Patches.Patch(Harmony);
-      StructureDamage_Patches.Patch(Harmony);
-      WeaponDamage_Patches.Patch(Harmony);
+      Harmony.PatchAll(typeof(Plugin).Assembly);
     }
 
     public static bool HasConfigPermission(Client client)

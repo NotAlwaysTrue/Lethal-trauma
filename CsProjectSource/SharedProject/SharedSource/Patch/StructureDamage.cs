@@ -10,33 +10,10 @@ using Barotrauma.Items.Components;
 
 namespace Lethaltrauma
 {
-  public static class StructureDamage_Patches
+  [HarmonyPatch(typeof(Explosion), nameof(Explosion.RangedStructureDamage))]
+  public static class Explosion_RangedStructureDamage_Patch
   {
-    public static void Patch(Harmony harmony)
-    {
-      harmony.Patch(
-        original: typeof(Structure).GetMethod("AddDamage", AccessTools.all, new Type[]{
-          typeof(Character),
-          typeof(Vector2),
-          typeof(Attack),
-          typeof(Vector2),
-          typeof(float),
-          typeof(bool),
-        }),
-        prefix: new HarmonyMethod(typeof(StructureDamage_Patches).GetMethod("Structure_AddDamage_Prefix"))
-      );
-
-      harmony.Patch(
-        original: typeof(Item).GetMethod("AddDamage", AccessTools.all),
-        prefix: new HarmonyMethod(typeof(StructureDamage_Patches).GetMethod("Item_AddDamage_Prefix"))
-      );
-
-      harmony.Patch(
-        original: typeof(Explosion).GetMethod("RangedStructureDamage", AccessTools.all),
-        prefix: new HarmonyMethod(typeof(StructureDamage_Patches).GetMethod("Explosion_RangedStructureDamage_Prefix"))
-      );
-    }
-
+    [HarmonyPrefix]
     public static void Explosion_RangedStructureDamage_Prefix(ref float damage, Character attacker)
     {
       if (attacker is null) return;
@@ -49,7 +26,19 @@ namespace Lethaltrauma
         damage *= Plugin.Config.MonsterStructureDamage;
       }
     }
+  }
 
+  [HarmonyPatch(typeof(Structure), nameof(Structure.AddDamage), new Type[] {
+    typeof(Character),
+    typeof(Vector2),
+    typeof(Attack),
+    typeof(Vector2),
+    typeof(float),
+    typeof(bool),
+  })]
+  public static class Structure_AddDamage_Patch
+  {
+    [HarmonyPrefix]
     public static void Structure_AddDamage_Prefix(Structure __instance, ref AttackResult __result, Character attacker, Vector2 worldPosition, Attack attack, Vector2 impulseDirection, float deltaTime, bool playSound = false)
     {
       if (attacker is null) return;
@@ -62,7 +51,12 @@ namespace Lethaltrauma
         attack.DamageMultiplier = Plugin.Config.MonsterStructureDamage;
       }
     }
+  }
 
+  [HarmonyPatch(typeof(Item), nameof(Item.AddDamage))]
+  public static class Item_AddDamage_Patch
+  {
+    [HarmonyPrefix]
     public static void Item_AddDamage_Prefix(Item __instance, ref AttackResult __result, Character attacker, Vector2 worldPosition, Attack attack, Vector2 impulseDirection, float deltaTime, bool playSound = true)
     {
       if (attacker is null) return;
@@ -81,6 +75,5 @@ namespace Lethaltrauma
         }
       }
     }
-
   }
 }

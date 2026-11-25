@@ -9,40 +9,33 @@ using Microsoft.Xna.Framework;
 
 namespace Lethaltrauma
 {
-  public static class CrimesInMask_Patches
+  [HarmonyPatch(typeof(CampaignMode), nameof(CampaignMode.OutpostNPCAttacked))]
+  public static class CampaignMode_OutpostNPCAttacked_Patch
   {
-    public static void Patch(Harmony harmony)
-    {
-      harmony.Patch(
-        original: typeof(HumanAIController).GetMethod("ApplyStealingReputationLoss", AccessTools.all),
-        prefix: new HarmonyMethod(typeof(CrimesInMask_Patches).GetMethod("HumanAIController_ApplyStealingReputationLoss_Prefix"))
-      );
-
-      harmony.Patch(
-        original: typeof(HumanAIController).GetMethod("StructureDamaged", AccessTools.all),
-        prefix: new HarmonyMethod(typeof(CrimesInMask_Patches).GetMethod("HumanAIController_StructureDamaged_Replace"))
-      );
-
-      harmony.Patch(
-        original: typeof(CampaignMode).GetMethod("OutpostNPCAttacked", AccessTools.all),
-        prefix: new HarmonyMethod(typeof(CrimesInMask_Patches).GetMethod("CampaignMode_OutpostNPCAttacked_Prefix"))
-      );
-    }
-
+    [HarmonyPrefix]
     public static bool CampaignMode_OutpostNPCAttacked_Prefix(Character npc, Character attacker, AttackResult attackResult)
     {
       if (Plugin.Config?.NoReputationLossInMask == true && attacker.HideFace) return false;
       return true;
     }
+  }
 
+  [HarmonyPatch(typeof(HumanAIController), nameof(HumanAIController.ApplyStealingReputationLoss))]
+  public static class HumanAIController_ApplyStealingReputationLoss_Patch
+  {
+    [HarmonyPrefix]
     public static bool HumanAIController_ApplyStealingReputationLoss_Prefix(Item item)
     {
       if (Plugin.Config?.NoReputationLossInMask == true && Character.Controlled?.HideFace == true) return false;
       return true;
     }
+  }
 
-
-    public static bool HumanAIController_StructureDamaged_Replace(HumanAIController __instance, Structure structure, float damageAmount, Character character)
+  [HarmonyPatch(typeof(HumanAIController), nameof(HumanAIController.StructureDamaged))]
+  public static class HumanAIController_StructureDamaged_Patch
+  {
+    [HarmonyPrefix]
+    public static bool HumanAIController_StructureDamaged_Replace(HumanAIController __instance, MapEntity structure, float damageAmount, Character attacker)
     {
       const float MaxDamagePerSecond = 5.0f;
       const float MaxDamagePerFrame = MaxDamagePerSecond * (float)Timing.Step;
@@ -51,52 +44,53 @@ namespace Lethaltrauma
       const float ArrestThreshold = 20.0f;
       const float KillThreshold = 50.0f;
 
-      if (character == null || damageAmount <= 0.0f) { return false; }
-      if (structure?.Submarine == null || !structure.Submarine.Info.IsOutpost || character.TeamID == structure.Submarine.TeamID) { return false; }
+      if (attacker == null || damageAmount <= 0.0f) { return false; }
+      if (structure is not Structure structureEntity) { return true; }
+      if (structureEntity.Submarine == null || !structureEntity.Submarine.Info.IsOutpost || attacker.TeamID == structureEntity.Submarine.TeamID) { return false; }
       //structure not indestructible = something that's "meant" to be destroyed, like an ice wall in mines
-      if (!structure.Prefab.IndestructibleInOutposts) { return false; }
+      if (!structureEntity.Prefab.IndestructibleInOutposts) { return false; }
 
       bool someoneSpoke = false;
       float maxAccumulatedDamage = 0.0f;
       foreach (Character otherCharacter in Character.CharacterList)
       {
-        if (otherCharacter == character || otherCharacter.TeamID == character.TeamID || otherCharacter.IsDead ||
+        if (otherCharacter == attacker || otherCharacter.TeamID == attacker.TeamID || otherCharacter.IsDead ||
             otherCharacter.Info?.Job == null ||
             otherCharacter.AIController is not HumanAIController otherHumanAI ||
-            Vector2.DistanceSquared(otherCharacter.WorldPosition, character.WorldPosition) > 1000.0f * 1000.0f)
+            Vector2.DistanceSquared(otherCharacter.WorldPosition, attacker.WorldPosition) > 1000.0f * 1000.0f)
         {
           continue;
         }
-        if (!otherCharacter.CanSeeTarget(character, seeThroughWindows: true)) { continue; }
+        if (!otherCharacter.CanSeeTarget(attacker, seeThroughWindows: true)) { continue; }
 
-        otherHumanAI.structureDamageAccumulator.TryAdd(character, 0.0f);
-        float prevAccumulatedDamage = otherHumanAI.structureDamageAccumulator[character];
-        otherHumanAI.structureDamageAccumulator[character] += MathHelper.Clamp(damageAmount, -MaxDamagePerFrame, MaxDamagePerFrame);
-        float accumulatedDamage = Math.Max(otherHumanAI.structureDamageAccumulator[character], maxAccumulatedDamage);
+        otherHumanAI.structureDamageAccumulator.TryAdd(attacker, 0.0f);
+        float prevAccumulatedDamage = otherHumanAI.structureDamageAccumulator[attacker];
+        otherHumanAI.structureDamageAccumulator[attacker] += MathHelper.Clamp(damageAmount, -MaxDamagePerFrame, MaxDamagePerFrame);
+        float accumulatedDamage = Math.Max(otherHumanAI.structureDamageAccumulator[attacker], maxAccumulatedDamage);
         maxAccumulatedDamage = Math.Max(accumulatedDamage, maxAccumulatedDamage);
 
-        if (GameMain.GameSession?.Campaign?.Map?.CurrentLocation?.Reputation != null && character.IsPlayer)
+        if (GameMain.GameSession?.Campaign?.Map?.CurrentLocation?.Reputation != null && attacker.IsPlayer)
         {
-          if (Plugin.Config == null || !Plugin.Config.NoReputationLossInMask || !character.HideFace)
+          if (Plugin.Config == null || !Plugin.Config.NoReputationLossInMask || !attacker.HideFace)
           {
             var reputationLoss = damageAmount * Reputation.ReputationLossPerWallDamage;
             GameMain.GameSession.Campaign.Map.CurrentLocation.Reputation.AddReputation(-reputationLoss, Reputation.MaxReputationLossFromWallDamage);
           }
         }
 
-        if (!character.IsCriminal)
+        if (!attacker.IsCriminal)
         {
           if (accumulatedDamage <= WarningThreshold) { return false; }
 
           if (accumulatedDamage > WarningThreshold && prevAccumulatedDamage <= WarningThreshold &&
-              !someoneSpoke && !character.IsIncapacitated && character.Stun <= 0.0f)
+              !someoneSpoke && !attacker.IsIncapacitated && attacker.Stun <= 0.0f)
           {
             //if the damage is still fairly low, wait and see if the character keeps damaging the walls to the point where we need to intervene
             if (accumulatedDamage < ArrestThreshold)
             {
               if (otherHumanAI.ObjectiveManager.CurrentObjective is AIObjectiveIdle idleObjective)
               {
-                idleObjective.FaceTargetAndWait(character, 5.0f);
+                idleObjective.FaceTargetAndWait(attacker, 5.0f);
               }
             }
             otherCharacter.Speak(TextManager.Get("dialogdamagewallswarning").Value, null, Rand.Range(0.5f, 1.0f), "damageoutpostwalls".ToIdentifier(), 10.0f);
@@ -105,19 +99,19 @@ namespace Lethaltrauma
         }
 
         // React if we are security
-        if (character.IsCriminal ||
+        if (attacker.IsCriminal ||
             (accumulatedDamage > ArrestThreshold && prevAccumulatedDamage <= ArrestThreshold) ||
             (accumulatedDamage > KillThreshold && prevAccumulatedDamage <= KillThreshold))
         {
           var combatMode = accumulatedDamage > KillThreshold ? AIObjectiveCombat.CombatMode.Offensive : AIObjectiveCombat.CombatMode.Arrest;
           if (combatMode == AIObjectiveCombat.CombatMode.Offensive)
           {
-            character.IsCriminal = true;
+            attacker.IsCriminal = true;
           }
           if (!TriggerSecurity(otherHumanAI, combatMode))
           {
             // Else call the others
-            foreach (Character security in Character.CharacterList.Where(c => c.TeamID == otherCharacter.TeamID).OrderBy(c => Vector2.DistanceSquared(character.WorldPosition, c.WorldPosition)))
+            foreach (Character security in Character.CharacterList.Where(c => c.TeamID == otherCharacter.TeamID).OrderBy(c => Vector2.DistanceSquared(attacker.WorldPosition, c.WorldPosition)))
             {
               if (!TriggerSecurity(security.AIController as HumanAIController, combatMode))
               {
@@ -134,7 +128,7 @@ namespace Lethaltrauma
         if (humanAI == null) { return false; }
         if (!humanAI.Character.IsSecurity) { return false; }
         if (humanAI.ObjectiveManager.IsCurrentObjective<AIObjectiveCombat>()) { return false; }
-        humanAI.AddCombatObjective(combatMode, character, delay: HumanAIController.GetReactionTime(),
+        humanAI.AddCombatObjective(combatMode, attacker, delay: HumanAIController.GetReactionTime(),
             onCompleted: () =>
             {
               //if the target is arrested successfully, reset the damage accumulator
@@ -142,7 +136,7 @@ namespace Lethaltrauma
               {
                 if (anyCharacter.AIController is HumanAIController anyAI)
                 {
-                  anyAI.structureDamageAccumulator?.Remove(character);
+                  anyAI.structureDamageAccumulator?.Remove(attacker);
                 }
               }
             });
@@ -151,6 +145,5 @@ namespace Lethaltrauma
 
       return false;
     }
-
   }
 }

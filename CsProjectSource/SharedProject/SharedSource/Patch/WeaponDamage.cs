@@ -15,31 +15,20 @@ using Barotrauma.Items.Components;
 
 namespace Lethaltrauma
 {
-  public static class WeaponDamage_Patches
+  [HarmonyPatch(typeof(Projectile), nameof(Projectile.HandleProjectileCollision))]
+  public static class Projectile_HandleProjectileCollision_Patch
   {
-    public static void Patch(Harmony harmony)
-    {
-      harmony.Patch(
-        original: typeof(Character).GetMethod("ApplyAttack", AccessTools.all),
-        prefix: new HarmonyMethod(typeof(WeaponDamage_Patches).GetMethod("Character_ApplyAttack_Prefix"))
-      );
-
-      harmony.Patch(
-        original: typeof(Explosion).GetMethod("DamageCharacters", AccessTools.all),
-        prefix: new HarmonyMethod(typeof(WeaponDamage_Patches).GetMethod("Explosion_DamageCharacters_Prefix"))
-      );
-
-      harmony.Patch(
-        original: typeof(Projectile).GetMethod("HandleProjectileCollision", AccessTools.all),
-        postfix: new HarmonyMethod(typeof(WeaponDamage_Patches).GetMethod("Projectile_HandleProjectileCollision_Postfix"))
-      );
-    }
-
+    [HarmonyPostfix]
     public static void Projectile_HandleProjectileCollision_Postfix(Projectile __instance, ref bool __result, Fixture target, Vector2 collisionNormal, Vector2 velocity)
     {
       SharedState.fromRangedWeapon = null;
     }
+  }
 
+  [HarmonyPatch(typeof(Character), nameof(Character.ApplyAttack))]
+  public static class Character_ApplyAttack_Patch
+  {
+    [HarmonyPrefix]
     public static bool Character_ApplyAttack_Prefix(Character __instance, ref AttackResult __result, Character attacker, Vector2 worldPosition, Attack attack, float deltaTime, Vector2 impulseDirection, bool playSound = false, Limb targetLimb = null, float penetration = 0f)
     {
       if (Plugin.Config == null) return true;
@@ -64,9 +53,12 @@ namespace Lethaltrauma
 
       return true;
     }
+  }
 
-
-
+  [HarmonyPatch(typeof(Explosion), nameof(Explosion.DamageCharacters))]
+  public static class Explosion_DamageCharacters_Patch
+  {
+    [HarmonyPrefix]
     public static bool Explosion_DamageCharacters_Prefix(Explosion __instance, Vector2 worldPosition, Attack attack, float force, Entity damageSource, Character attacker)
     {
       if (Plugin.Config == null) return true;
@@ -74,6 +66,5 @@ namespace Lethaltrauma
 
       return true;
     }
-
   }
 }
