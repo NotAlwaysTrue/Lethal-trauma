@@ -8,9 +8,10 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using System.Text.Json;
 using BaroJunk;
+
 namespace Lethaltrauma
 {
-  public partial class Mod : IAssemblyPlugin
+  public partial class Mod
   {
     public IPluginManagementService PluginService { get; set; }
     public static Mod Instance { get; private set; }
@@ -23,7 +24,7 @@ namespace Lethaltrauma
 
     public Harmony Harmony { get; } = new Harmony("Lethaltrauma");
 
-    public void Initialize()
+    public void Init()
     {
       Instance = this;
 
@@ -62,8 +63,6 @@ namespace Lethaltrauma
     public partial void InitializeProjSpecific();
     public partial void DisposeProjSpecific();
 
-    public void OnLoadCompleted() { }
-    public void PreInitPatching() { }
     public void Dispose()
     {
       DisposeProjSpecific();
