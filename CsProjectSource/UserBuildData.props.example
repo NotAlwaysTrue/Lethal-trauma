@@ -1,0 +1,20 @@
+<Project>
+  <!--
+    Machine specific build settings.
+
+    Copy this file to "UserBuildData.props" (same folder) and edit the values below.
+    "UserBuildData.props" is ignored by git, so every developer can point at their own
+    Barotrauma installation without touching the tracked template files.
+  -->
+  <PropertyGroup>
+    <!--
+      Absolute path to the Barotrauma executable. Used by the "Launch Barotrauma" launch
+      profile in PluginToolbox/Properties/launchSettings.json, and its folder is used to
+      locate Barotrauma.dll / DedicatedServer.dll and the game's dependency assemblies.
+
+      If this file is missing, BuildData.props falls back to
+      <repo>\..\..\Barotrauma.exe, which assumes the repository sits directly in LocalMods.
+    -->
+    <BarotraumaExePath>E:\SteamLibrary\steamapps\common\Barotrauma\Barotrauma.exe</BarotraumaExePath>
+  </PropertyGroup>
+</Project>

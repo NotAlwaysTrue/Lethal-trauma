@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<PluginInfos notsyncedinmultiplayer="false" >
+  <MainAssemblyInfo assemblypath="%ModDir%/bin/Windows/Server/LethaltraumaServer.dll" platforms="Windows" targets="Server" />
+  <MainAssemblyInfo assemblypath="%ModDir%/bin/Windows/Client/LethaltraumaClient.dll" platforms="Windows" targets="Client" />
+
+  <MainAssemblyInfo assemblypath="%ModDir%/bin/Linux/Server/LethaltraumaServer.dll" platforms="Linux" targets="Server" />
+  <MainAssemblyInfo assemblypath="%ModDir%/bin/Linux/Client/LethaltraumaClient.dll" platforms="Linux" targets="Client" />
+
+  <MainAssemblyInfo assemblypath="%ModDir%/bin/Mac/Server/LethaltraumaServer.dll" platforms="Mac" targets="Server" />
+  <MainAssemblyInfo assemblypath="%ModDir%/bin/Mac/Client/LethaltraumaClient.dll" platforms="Mac" targets="Client" />
+</PluginInfos>

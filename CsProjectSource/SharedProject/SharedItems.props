@@ -1,0 +1,143 @@
+<Project>
+  <!--
+    Game assemblies.
+
+    UsePublicizedAssemblies = true  -> compile against the publicized reference package, which makes
+    internal/private members public at compile time (the mod was written against LuaCs publicized
+    assemblies). This requires the game to actually run publicized assemblies at runtime.
+
+    UsePublicizedAssemblies = false -> compile against the game assemblies of the local installation.
+  -->
+
+  <ItemGroup Condition="'$(UsePublicizedAssemblies)' == 'true'">
+    <PackageReference Include="Barotrauma.ReferenceAssemblies.Vanilla.Publicized" GeneratePathProperty="true" Version="1.15.24" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePublicizedAssemblies)' != 'true'">
+    <Reference Include="BarotraumaCore">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\BarotraumaCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePublicizedAssemblies)' != 'true' And '$(BuildTarget)' == 'Client'">
+    <Reference Include="Barotrauma">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\Barotrauma.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(UsePublicizedAssemblies)' != 'true' And '$(BuildTarget)' == 'Server'">
+    <Reference Include="DedicatedServer">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\DedicatedServer.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="XNATypes">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\XNATypes.dll</HintPath>
+    </Reference>
+
+    <Reference Include="Farseer.NetStandard">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\Farseer.NetStandard.dll</HintPath>
+    </Reference>
+
+    <Reference Include="Lidgren.NetStandard">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\Lidgren.NetStandard.dll</HintPath>
+    </Reference>
+
+    <Reference Include="Concentus.NetStandard">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\Concentus.NetStandard.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(BuildTarget)' == 'Client'">
+    <Reference Include="SharpFont.NetStandard">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\SharpFont.NetStandard.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PlatformName)' == 'Windows'">
+    <Reference Include="Facepunch.Steamworks.Win64">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\Facepunch.Steamworks.Win64.dll</HintPath>
+    </Reference>
+
+    <Reference Include="MonoGame.Framework.Windows.NetStandard">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\MonoGame.Framework.Windows.NetStandard.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PlatformName)' == 'Linux'">
+    <Reference Include="Facepunch.Steamworks.Posix64">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\Facepunch.Steamworks.Posix64.dll</HintPath>
+    </Reference>
+
+    <Reference Include="MonoGame.Framework.Linux.NetStandard">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\MonoGame.Framework.Linux.NetStandard.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(PlatformName)' == 'Mac'">
+    <Reference Include="Facepunch.Steamworks.Posix64">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\Facepunch.Steamworks.Posix64.dll</HintPath>
+    </Reference>
+
+    <Reference Include="MonoGame.Framework.Linux.NetStandard">
+      <Private>False</Private>
+      <HintPath>$(BarotraumaDir)\MonoGame.Framework.MacOS.NetStandard.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HarmonyX" Version="2.16.0" />
+  </ItemGroup>
+
+  <Import Project="..\References.props" />
+
+  <Target Name="ReadGameVersion" AfterTargets="ResolveReferences"
+          BeforeTargets="GenerateAssemblyInfo"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <!-- When compiling against the publicized package, read the version of the assembly we
+         actually link against. Otherwise fall back to the local game installation. -->
+    <PropertyGroup>
+      <BarotraumaAssemblyToRead Condition="'$(PkgBarotrauma_ReferenceAssemblies_Vanilla_Publicized)' != ''">$(PkgBarotrauma_ReferenceAssemblies_Vanilla_Publicized)\assemblies\$(PlatformName)\Barotrauma.dll</BarotraumaAssemblyToRead>
+      <BarotraumaAssemblyToRead Condition="'$(BarotraumaAssemblyToRead)' == ''">$(BarotraumaDir)\Barotrauma.dll</BarotraumaAssemblyToRead>
+    </PropertyGroup>
+
+    <Error Code="MOD1001"
+           Condition="!Exists('$(BarotraumaAssemblyToRead)')"
+           Text="Barotrauma assemblies were not found at '$(BarotraumaAssemblyToRead)'. Set BarotraumaExePath in CsProjectSource\UserBuildData.props (copy UserBuildData.props.example), or restore the publicized reference package." />
+
+    <GetAssemblyIdentity AssemblyFiles="$(BarotraumaAssemblyToRead)">
+      <Output TaskParameter="Assemblies" ItemName="GameAssemblyIdentity" />
+    </GetAssemblyIdentity>
+
+    <PropertyGroup>
+      <GameVersion>@(GameAssemblyIdentity->'%(Version)')</GameVersion>
+    </PropertyGroup>
+
+    <Message Importance="High" Text="Detected Barotrauma version: $(GameVersion)" />
+
+    <ItemGroup Label="BarotraumaMetadata">
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>RepositoryUrl</_Parameter1>
+        <_Parameter2>$(RepositoryURL)</_Parameter2>
+      </AssemblyAttribute>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>GameVersion</_Parameter1>
+        <_Parameter2>$(GameVersion)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+</Project>

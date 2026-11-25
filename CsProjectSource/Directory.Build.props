@@ -1,0 +1,13 @@
+<Project>
+  <!--
+    Keep one intermediate folder per project.
+
+    ClientProject/ and ServerProject/ each hold three csproj files (Windows / Linux / Mac).
+    Without this file they share obj/project.assets.json and obj/project.nuget.cache, so
+    restore state is shared between projects that reference different game assemblies
+    (Barotrauma.dll on client, DedicatedServer.dll on server).
+  -->
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>
