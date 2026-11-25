@@ -4,8 +4,11 @@ using Microsoft.Xna.Framework;
 
 namespace Lethaltrauma
 {
-  public partial class Mod : IBarotraumaPlugin
+  public partial class Plugin : IBarotraumaPlugin
   {
+    public void DisposeBuildSpecific()
+    {
 
+    }
   }
 }

@@ -6,10 +6,15 @@ using System.Linq;
 
 namespace Lethaltrauma
 {
-  public partial class Mod : IAssemblyPlugin
+  public partial class Plugin : IAssemblyPlugin
   {
     public void Initialize() => Init();
     public void OnLoadCompleted() { }
     public void PreInitPatching() { }
+
+    public void DisposeBuildSpecific()
+    {
+
+    }
   }
 }

@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 
 namespace Lethaltrauma
 {
-  public partial class Plugin : IBarotraumaPlugin
+  public partial class Plugin
   {
     public static readonly IDebugConsole DebugConsole = PluginServiceProvider.GetService<IDebugConsole>();
     public static readonly ISettingsService SettingsService = PluginServiceProvider.GetService<ISettingsService>();
@@ -58,6 +58,7 @@ namespace Lethaltrauma
       HooksFacade.RunStopHooks();
 
       DisposeProjectSpecific();
+      DisposeBuildSpecific();
       Harmony?.UnpatchSelf();
       Harmony = null;
       Instance = null;
