@@ -15,12 +15,12 @@ namespace Lethaltrauma
     [HarmonyPostfix]
     public static void HumanPrefab_InitializeCharacter_Postfix(HumanPrefab __instance, Character npc, ISpatialEntity positionToStayIn = null)
     {
-      if (Plugin.Config == null || !Plugin.Config.OverrideAim) return;
+      if (!Settings.OverrideAim.Value) return;
 
       if (npc.AIController is HumanAIController humanAI)
       {
-        humanAI.AimSpeed = Plugin.Config.AimSpeed;
-        humanAI.AimAccuracy = Plugin.Config.AimAccuracy;
+        humanAI.AimSpeed = Settings.AimSpeed.Value;
+        humanAI.AimAccuracy = Settings.AimAccuracy.Value;
       }
     }
 
@@ -28,12 +28,12 @@ namespace Lethaltrauma
     {
       foreach (Character character in Character.CharacterList)
       {
-        if (Plugin.Config.OverrideHealthMult)
+        if (Settings.OverrideHealthMult.Value)
         {
           if (character.AIController is HumanAIController humanAI)
           {
-            humanAI.AimSpeed = Plugin.Config.AimSpeed;
-            humanAI.AimAccuracy = Plugin.Config.AimAccuracy;
+            humanAI.AimSpeed = Settings.AimSpeed.Value;
+            humanAI.AimAccuracy = Settings.AimAccuracy.Value;
           }
         }
         else

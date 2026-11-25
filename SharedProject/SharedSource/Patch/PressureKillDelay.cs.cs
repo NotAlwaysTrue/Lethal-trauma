@@ -18,8 +18,7 @@ namespace Lethaltrauma
     [HarmonyPostfix]
     public static void Character_Constructor_Postfix(Character __instance)
     {
-      if (Plugin.Config == null) return;
-      __instance.CharacterHealth.PressureKillDelay = Plugin.Config.PressureKillDelay;
+      __instance.CharacterHealth.PressureKillDelay = Settings.PressureKillDelay.Value;
     }
 
     public static float GlobalPressureKillDelay

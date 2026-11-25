@@ -1,6 +1,5 @@
 using Barotrauma;
 using Barotrauma.Plugins;
-using BaroJunk;
 
 namespace Lethaltrauma
 {

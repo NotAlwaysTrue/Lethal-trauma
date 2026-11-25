@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using Barotrauma;
 using Barotrauma.Networking;
 using Barotrauma.Plugins;
-using BaroJunk;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 
@@ -22,11 +21,16 @@ namespace Lethaltrauma
     public static readonly ISimpleHookService HookService = PluginServiceProvider.GetService<ISimpleHookService>();
 
     public static Plugin Instance { get; private set; }
-    public static Config Config { get; private set; } = new Config();
     public static Logger Logger { get; private set; } = new Logger
     {
       PrintFilePath = false
     };
+
+    private PluginOnPreUpdateDelegate onPreUpdate;
+    private object[] settingsSnapshot;
+    private float settingsCheckTimer;
+
+    private const float SettingsCheckInterval = 0.25f;
 
     public static ContentPackage Package => PackageRetrieval.ContentPackage;
 
@@ -40,14 +44,15 @@ namespace Lethaltrauma
 
       DebugConsole.NewMessage("Plugin loaded", Color.Lime);
 
-      SettingsService.RegisterSetting(ConfigSetting.Instance);
+      Settings.RegisterAll(SettingsService);
 
-      Config.Settings().CommandName = "lt";
-      Config.Settings().DeeplyReactive = true;
-      Config.OnUpdated(() => GlobalUpdate());
-      Config.OnPropChanged((key, value) => GlobalUpdate());
+      settingsSnapshot = Settings.Snapshot();
+      GlobalUpdate();
 
-      Config.UseStrategy(ConfigStrategy.MultiplayerBothSides);
+      onPreUpdate = OnPreUpdate;
+      HookService.RegisterHook(onPreUpdate);
+
+      SettingsCommand.Register();
 
       PatchAll();
       InitProjectSpecific();
@@ -59,7 +64,10 @@ namespace Lethaltrauma
 
     public void Dispose()
     {
-      HooksFacade.RunStopHooks();
+      SettingsCommand.Deregister();
+
+      if (onPreUpdate is not null) HookService.DeregisterHook(onPreUpdate);
+      onPreUpdate = null;
 
       DisposeProjectSpecific();
       Harmony?.UnpatchSelf();
@@ -68,11 +76,30 @@ namespace Lethaltrauma
       DebugConsole.NewMessage("Plugin unloaded", Color.Red);
     }
 
-    public void GlobalUpdate()
+    private void OnPreUpdate(float deltaTime)
+    {
+      settingsCheckTimer -= deltaTime;
+      if (settingsCheckTimer > 0f) return;
+      settingsCheckTimer = SettingsCheckInterval;
+
+      if (!Settings.HasChanged(settingsSnapshot)) return;
+
+      ApplySettings();
+    }
+
+    public static void ApplySettings()
+    {
+      if (Instance is null) return;
+
+      Instance.settingsSnapshot = Settings.Snapshot();
+      GlobalUpdate();
+    }
+
+    public static void GlobalUpdate()
     {
       BotAim_Patches.GlobalAimUpdate();
       HealthMultipliers_Patches.GlobalUpdateHealthMultipliers();
-      PressureKillDelay_Patches.GlobalPressureKillDelay = Config.PressureKillDelay;
+      PressureKillDelay_Patches.GlobalPressureKillDelay = Settings.PressureKillDelay.Value;
     }
 
     public void PatchAll()

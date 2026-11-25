@@ -30,7 +30,7 @@ namespace Lethaltrauma
       if (
         attacker != null && attacker != _ &&
         (
-          !Plugin.Config.AllowFriendlyFire ||
+          !Settings.AllowFriendlyFire.Value ||
           GameMain.NetworkMember != null && !GameMain.NetworkMember.ServerSettings.AllowFriendlyFire
         )
       )
@@ -58,7 +58,7 @@ namespace Lethaltrauma
 
       if (SharedState.fromRangedWeapon == true)
       {
-        damageMultiplier = Plugin.Config.RangedWeaponDamage;
+        damageMultiplier = Settings.RangedWeaponDamage.Value;
       }
 
       bool wasDead = _.IsDead;

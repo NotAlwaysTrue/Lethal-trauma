@@ -9,9 +9,8 @@ using Barotrauma;
 using Microsoft.Xna.Framework;
 using System.IO;
 using System.Text;
-using Lethaltrauma;
 
-namespace BaroJunk
+namespace Lethaltrauma
 {
   public partial class Logger
   {

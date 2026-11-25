@@ -18,7 +18,7 @@ using System.Text.Unicode;
 
 
 
-namespace BaroJunk
+namespace Lethaltrauma
 {
   public partial class Logger
   {

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Barotrauma;
+using Barotrauma.Plugins;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
-using BaroJunk;
 using Qoollo.Net.Http;
 using Barotrauma.Steam;
 using System.IO;
@@ -37,17 +37,35 @@ namespace Lethaltrauma
       using (StreamReader reader = new StreamReader(body, request.ContentEncoding))
       {
         string json = reader.ReadToEnd();
-        Config config = JsonSerializer.Deserialize<Config>(json);
-        config.CopyTo(Plugin.Config);
-        Plugin.Config.GetReactiveCore().RaiseUpdated();
-        Plugin.Config.GetCore().Sync();
+
+        Dictionary<string, JsonElement> values;
+        try
+        {
+          values = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+        }
+        catch (JsonException)
+        {
+          return "invalid json";
+        }
+
+        if (values != null)
+        {
+          foreach (KeyValuePair<string, JsonElement> pair in values)
+          {
+            ISetting setting = Settings.Find(pair.Key);
+            if (setting is null) continue;
+            Settings.TrySetValue(setting, pair.Value.ToString());
+          }
+
+          Plugin.ApplySettings();
+        }
       }
 
       return "bruh";
     }
 
     public string GetConfig(HttpListenerRequest request)
-      => JsonSerializer.Serialize(Plugin.Config);
+      => JsonSerializer.Serialize(Settings.ToDictionary());
 
     public string GetServerID(HttpListenerRequest request)
     {

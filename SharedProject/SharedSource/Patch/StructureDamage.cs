@@ -19,11 +19,11 @@ namespace Lethaltrauma
       if (attacker is null) return;
       if (attacker.IsHuman)
       {
-        damage *= Plugin.Config.WeaponStructureDamage;
+        damage *= Settings.WeaponStructureDamage.Value;
       }
       else
       {
-        damage *= Plugin.Config.MonsterStructureDamage;
+        damage *= Settings.MonsterStructureDamage.Value;
       }
     }
   }
@@ -44,11 +44,11 @@ namespace Lethaltrauma
       if (attacker is null) return;
       if (attacker.IsHuman)
       {
-        attack.DamageMultiplier = Plugin.Config.WeaponStructureDamage;
+        attack.DamageMultiplier = Settings.WeaponStructureDamage.Value;
       }
       else
       {
-        attack.DamageMultiplier = Plugin.Config.MonsterStructureDamage;
+        attack.DamageMultiplier = Settings.MonsterStructureDamage.Value;
       }
     }
   }
@@ -67,11 +67,11 @@ namespace Lethaltrauma
       {
         if (attacker.IsHuman)
         {
-          attack.DamageMultiplier = Plugin.Config.WeaponStructureDamage;
+          attack.DamageMultiplier = Settings.WeaponStructureDamage.Value;
         }
         else
         {
-          attack.DamageMultiplier = Plugin.Config.MonsterStructureDamage;
+          attack.DamageMultiplier = Settings.MonsterStructureDamage.Value;
         }
       }
     }

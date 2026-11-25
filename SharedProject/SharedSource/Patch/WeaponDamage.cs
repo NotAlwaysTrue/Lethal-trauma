@@ -31,24 +31,22 @@ namespace Lethaltrauma
     [HarmonyPrefix]
     public static bool Character_ApplyAttack_Prefix(Character __instance, ref AttackResult __result, Character attacker, Vector2 worldPosition, Attack attack, float deltaTime, Vector2 impulseDirection, bool playSound = false, Limb targetLimb = null, float penetration = 0f)
     {
-      if (Plugin.Config == null) return true;
-
       bool fromTurret = attack.SourceItem?.GetComponent<Projectile>()?.Launcher?.GetComponent<Turret>() != null;
       bool fromRangedWeapon = attack.SourceItem?.GetComponent<RangedWeapon>() != null || attack.SourceItem?.GetComponent<Projectile>()?.Launcher?.GetComponent<RangedWeapon>() != null;
       bool fromMeleeWeapon = attack.SourceItem?.GetComponent<MeleeWeapon>() != null;
 
       SharedState.fromRangedWeapon = fromRangedWeapon;
 
-      if (fromTurret) attack.DamageMultiplier = Plugin.Config.TurretDamage;
-      if (fromRangedWeapon) attack.DamageMultiplier = Plugin.Config.RangedWeaponDamage;
-      if (fromMeleeWeapon) attack.DamageMultiplier = Plugin.Config.MeleeWeaponDamage;
+      if (fromTurret) attack.DamageMultiplier = Settings.TurretDamage.Value;
+      if (fromRangedWeapon) attack.DamageMultiplier = Settings.RangedWeaponDamage.Value;
+      if (fromMeleeWeapon) attack.DamageMultiplier = Settings.MeleeWeaponDamage.Value;
 
 
 
       //TODO there's probably more cases
       if (!fromTurret && !fromRangedWeapon && !fromMeleeWeapon)
       {
-        attack.DamageMultiplier = Plugin.Config.MonsterAttackDamage;
+        attack.DamageMultiplier = Settings.MonsterAttackDamage.Value;
       }
 
       return true;
@@ -61,8 +59,7 @@ namespace Lethaltrauma
     [HarmonyPrefix]
     public static bool Explosion_DamageCharacters_Prefix(Explosion __instance, Vector2 worldPosition, Attack attack, float force, Entity damageSource, Character attacker)
     {
-      if (Plugin.Config == null) return true;
-      attack.DamageMultiplier = Plugin.Config.ExplosionDamage;
+      attack.DamageMultiplier = Settings.ExplosionDamage.Value;
 
       return true;
     }
