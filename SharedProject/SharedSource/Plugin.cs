@@ -20,10 +20,6 @@ namespace Lethaltrauma
     public static readonly ISimpleHookService HookService = PluginServiceProvider.GetService<ISimpleHookService>();
 
     public static Plugin Instance { get; private set; }
-    public static Logger Logger { get; private set; } = new Logger
-    {
-      PrintFilePath = false
-    };
 
     private PluginOnPreUpdateDelegate onPreUpdate;
     private object[] settingsSnapshot;

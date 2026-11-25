@@ -27,7 +27,7 @@ namespace Lethaltrauma
       {
         foreach ((string name, ISetting setting) in Settings.All)
         {
-          Plugin.Logger.Log($"{name} = {Settings.GetValue(setting)}");
+          Plugin.DebugConsole.NewMessage($"{name} = {Settings.GetValue(setting)}");
         }
         return;
       }
@@ -36,31 +36,31 @@ namespace Lethaltrauma
 
       if (target is null)
       {
-        Plugin.Logger.Warning($"No such setting: {args[0]}");
+        Plugin.DebugConsole.AddWarning($"No such setting: {args[0]}");
         return;
       }
 
       if (args.Length == 1)
       {
-        Plugin.Logger.Log($"{args[0]} = {Settings.GetValue(target)}");
+        Plugin.DebugConsole.NewMessage($"{args[0]} = {Settings.GetValue(target)}");
         return;
       }
 
       if (!Plugin.LocalClientHasConfigPermission())
       {
-        Plugin.Logger.Warning("You don't have permission to change the settings.");
+        Plugin.DebugConsole.AddWarning("You don't have permission to change the settings.");
         return;
       }
 
       if (!Settings.TrySetValue(target, args[1]))
       {
-        Plugin.Logger.Warning($"Can't parse '{args[1]}' as a value for {args[0]}.");
+        Plugin.DebugConsole.AddWarning($"Can't parse '{args[1]}' as a value for {args[0]}.");
         return;
       }
 
       Plugin.ApplySettings();
 
-      Plugin.Logger.Log($"{args[0]} = {Settings.GetValue(target)}");
+      Plugin.DebugConsole.NewMessage($"{args[0]} = {Settings.GetValue(target)}");
     }
 
     private static string[][] Hints()
