@@ -186,6 +186,7 @@ namespace Lethaltrauma
         Range = new Vector2(min, max),
         StepValue = step,
         ShowInUI = true,
+        SyncMode = SettingSyncMode.ServerAuthority,
         IsAllowedToSet = (setting, client) => Plugin.HasConfigPermission(client)
       };
 
@@ -193,6 +194,7 @@ namespace Lethaltrauma
       => new BooleanSetting((IdentifierPrefix + name).ToIdentifier(), defaultValue, label)
       {
         ShowInUI = true,
+        SyncMode = SettingSyncMode.ServerAuthority,
         IsAllowedToSet = (setting, client) => Plugin.HasConfigPermission(client)
       };
 
