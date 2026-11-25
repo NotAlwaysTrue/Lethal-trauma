@@ -17,7 +17,6 @@ namespace Lethaltrauma
   {
     public static readonly IDebugConsole DebugConsole = PluginServiceProvider.GetService<IDebugConsole>();
     public static readonly ISettingsService SettingsService = PluginServiceProvider.GetService<ISettingsService>();
-    public static readonly IContentPackageRetrievalService PackageRetrieval = PluginServiceProvider.GetService<IContentPackageRetrievalService>();
     public static readonly ISimpleHookService HookService = PluginServiceProvider.GetService<ISimpleHookService>();
 
     public static Plugin Instance { get; private set; }
@@ -31,8 +30,6 @@ namespace Lethaltrauma
     private float settingsCheckTimer;
 
     private const float SettingsCheckInterval = 0.25f;
-
-    public static ContentPackage Package => PackageRetrieval.ContentPackage;
 
     public static Harmony Harmony { get; private set; }
 

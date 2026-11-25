@@ -147,16 +147,6 @@ namespace Lethaltrauma
       }
     }
 
-    public static Dictionary<string, object> ToDictionary()
-    {
-      Dictionary<string, object> values = new Dictionary<string, object>(All.Count);
-      foreach ((string name, ISetting setting) in All)
-      {
-        values[name] = GetValue(setting);
-      }
-      return values;
-    }
-
     public static object[] Snapshot()
     {
       object[] snapshot = new object[All.Count];
