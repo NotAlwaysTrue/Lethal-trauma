@@ -1,57 +1,23 @@
 using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics;
+using System.Reflection;
 
 using Barotrauma;
-using Microsoft.Xna.Framework;
-using System.IO;
-using System.Text;
+using Barotrauma.Plugins;
+using Lethaltrauma;
 
 namespace BaroJunk
 {
-
   public static class PluginCommands
   {
-    static PluginCommands()
-    {
-      AddHooks();
-    }
+    public static string AssemblyName => typeof(PluginCommands).Assembly.GetName().Name;
 
-    public static string AssemblyName => Assembly.GetCallingAssembly().GetName().Name;
-
-    public static List<DebugConsole.Command> AddedCommands = new List<DebugConsole.Command>();
-
-    private static void AddHooks()
-    {
-      LuaCsSetup.Instance.Hook.Add("stop", $"[{AssemblyName}].RemoveCommands", (object[] args) =>
-      {
-        RemoveCommands();
-        return null;
-      });
-
-      ((LuaCsSetup.Instance.EventService as EventService)
-           ._luaPatcher as LuaPatcherService)
-           .Patch($"{AssemblyName}.PermitCommands",
-              typeof(DebugConsole).GetMethod("IsCommandPermitted", BindingFlags.NonPublic | BindingFlags.Static),
-              (object instance, LuaPatcherService.ParameterTable ptable) =>
-              {
-                if (AddedCommands.Any(c => c.Names.Contains(((Identifier)ptable["command"]))))
-                {
-                  ptable.ReturnValue = true;
-                  ptable.PreventExecution = true;
-                }
-
-                return null;
-              }
-        );
-    }
+    public static List<string> AddedCommands = new List<string>();
 
     public static void Add(string name, Action<string[]> callback, Func<string[][]> hints = null, string help = "", bool addToStart = true)
     {
-      DebugConsole.Command command = new DebugConsole.Command(name, help, (string[] args) =>
+      Plugin.RegisterCommand(name, help, CommandFlags.None, args =>
       {
         try
         {
@@ -62,29 +28,25 @@ namespace BaroJunk
           Logger.Default.Error(e.Message);
         }
       }, hints);
-      AddedCommands.Add(command);
 
-      if (addToStart)
-      {
-        DebugConsole.Commands.Insert(0, command);
-      }
-      else
-      {
-        DebugConsole.Commands.Add(command);
-      }
+      AddedCommands.Add(name);
     }
 
     public static void PrintCommands()
     {
-      foreach (DebugConsole.Command command in DebugConsole.Commands)
+      foreach (string name in AddedCommands)
       {
-        Logger.Default.Log(command.Names[0]);
+        Logger.Default.Log(name);
       }
     }
 
     public static void RemoveCommands()
     {
-      AddedCommands.ForEach(c => DebugConsole.Commands.Remove(c));
+      foreach (string name in AddedCommands.ToList())
+      {
+        Plugin.DeregisterCommand(name);
+      }
+
       AddedCommands.Clear();
     }
   }

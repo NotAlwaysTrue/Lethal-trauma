@@ -21,12 +21,12 @@ namespace Lethaltrauma
 
     public static void HumanPrefab_InitializeCharacter_Postfix(HumanPrefab __instance, Character npc, ISpatialEntity positionToStayIn = null)
     {
-      if (Mod.Config == null || !Mod.Config.OverrideAim) return;
+      if (Plugin.Config == null || !Plugin.Config.OverrideAim) return;
 
       if (npc.AIController is HumanAIController humanAI)
       {
-        humanAI.AimSpeed = Mod.Config.AimSpeed;
-        humanAI.AimAccuracy = Mod.Config.AimAccuracy;
+        humanAI.AimSpeed = Plugin.Config.AimSpeed;
+        humanAI.AimAccuracy = Plugin.Config.AimAccuracy;
       }
     }
 
@@ -34,12 +34,12 @@ namespace Lethaltrauma
     {
       foreach (Character character in Character.CharacterList)
       {
-        if (Mod.Config.OverrideHealthMult)
+        if (Plugin.Config.OverrideHealthMult)
         {
           if (character.AIController is HumanAIController humanAI)
           {
-            humanAI.AimSpeed = Mod.Config.AimSpeed;
-            humanAI.AimAccuracy = Mod.Config.AimAccuracy;
+            humanAI.AimSpeed = Plugin.Config.AimSpeed;
+            humanAI.AimAccuracy = Plugin.Config.AimAccuracy;
           }
         }
         else

@@ -16,7 +16,10 @@ namespace BaroJunk
     public ConfigCore Config;
     public ConfigCommandsManager(ConfigCore config) => Config = config;
 
-    private string commandName; public string CommandName
+    private string registeredName;
+
+    private string commandName;
+    public string CommandName
     {
       get => commandName;
       set
@@ -26,50 +29,18 @@ namespace BaroJunk
       }
     }
 
-    public DebugConsole.Command Command;
-
     private void UpdateCommand(string name)
     {
-      if (Command is not null) Config.Facades.ConsoleFacade.Remove(Command);
+      if (!string.IsNullOrEmpty(registeredName))
+      {
+        Config.Facades.ConsoleFacade.Deregister(registeredName);
+        registeredName = null;
+      }
+
       if (name is null) return;
 
-      Command = new DebugConsole.Command(CommandName, "", EditConfig_VanillaCommand, Config.ToHints());
-
-#if CLIENT
-      Command.RelayToServer = false;
-#endif
-
-      Config.Facades.ConsoleFacade.Insert(Command);
-    }
-
-    private void AddHooks()
-    {
-      Config.Facades.HooksFacade.AddHook("stop", $"remove {Config.ID} config command", (object[] args) =>
-      {
-        if (Command is not null)
-        {
-          DebugConsole.Commands.Remove(Command);
-        }
-        return null;
-      });
-
-
-      Config.Facades.HooksFacade.Patch(
-        Config.ID + ".PermitConfigCommand",
-        typeof(DebugConsole).GetMethod("IsCommandPermitted", BindingFlags.NonPublic | BindingFlags.Static),
-        (object instance, LuaPatcherService.ParameterTable ptable) =>
-        {
-          if (Command is null) return null;
-
-          if (((Identifier)ptable["command"]) == Command.Names[0])
-          {
-            ptable.ReturnValue = true;
-            ptable.PreventExecution = true;
-          }
-
-          return null;
-        }
-      );
+      Config.Facades.ConsoleFacade.Register(name, "", EditConfig_VanillaCommand, Config.ToHints());
+      registeredName = name;
     }
 
     public void EditConfig_VanillaCommand(string[] args)
@@ -129,14 +100,5 @@ namespace BaroJunk
         }
       }
     }
-
-
-
-
-
-
-
-
-
   }
 }

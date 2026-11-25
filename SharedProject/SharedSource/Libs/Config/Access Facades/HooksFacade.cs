@@ -1,52 +1,77 @@
 using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 
 using Barotrauma;
-using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Barotrauma.Networking;
+using Barotrauma.Plugins;
+using Lethaltrauma;
 
 namespace BaroJunk
 {
+  public delegate object ConfigHookFunc(object[] args);
+
   public interface IHooksFacade
   {
     public void CallHook(string name, params object[] args);
     public void CallPatch(MethodBase method);
-    public void AddHook(string name, string identifier, LuaCsFunc func);
-    public void Patch(
-      string identifier,
-      MethodBase method,
-      LuaCsPatchFunc patch,
-      Barotrauma.LuaCs.Compatibility.ILuaCsHook.HookMethodType hookType = Barotrauma.LuaCs.Compatibility.ILuaCsHook.HookMethodType.Before
-    );
+    public void AddHook(string name, string identifier, ConfigHookFunc func);
   }
 
   public class HooksFacade : IHooksFacade
   {
+    private const string RoundEndHook = "roundend";
+    private const string StopHook = "stop";
+
+    private static readonly Dictionary<string, ConfigHookFunc> roundEndHooks = new Dictionary<string, ConfigHookFunc>();
+    private static readonly Dictionary<string, ConfigHookFunc> stopHooks = new Dictionary<string, ConfigHookFunc>();
+
+    private static bool roundEndRegistered;
+
     public void CallHook(string name, params object[] args) { }
+
     public void CallPatch(MethodBase method) { }
 
+    public void AddHook(string name, string identifier, ConfigHookFunc func)
+    {
+      Dictionary<string, ConfigHookFunc> table = name switch
+      {
+        RoundEndHook => roundEndHooks,
+        StopHook => stopHooks,
+        _ => null
+      };
 
-    public void AddHook(string name, string identifier, LuaCsFunc func)
-      => LuaCsSetup.Instance.EventService.Add(name, identifier, func);
+      if (table is null) return;
 
+      if (func is null) table.Remove(identifier);
+      else table[identifier] = func;
 
-    public void Patch(
-      string identifier,
-      MethodBase method,
-      LuaCsPatchFunc patch,
-      Barotrauma.LuaCs.Compatibility.ILuaCsHook.HookMethodType hookType = Barotrauma.LuaCs.Compatibility.ILuaCsHook.HookMethodType.Before
-    ) => ((LuaCsSetup.Instance.EventService as EventService)
-           ._luaPatcher as LuaPatcherService)
-           .Patch(identifier, method, patch, hookType);
+      if (name == RoundEndHook) EnsureRoundEndRegistered();
+    }
 
+    private static void EnsureRoundEndRegistered()
+    {
+      if (roundEndRegistered) return;
+      roundEndRegistered = true;
 
+      Plugin.HookService.RegisterHook<PluginRoundEndedDelegate>(session => InvokeAll(roundEndHooks, session));
+    }
+
+    internal static void RunStopHooks() => InvokeAll(stopHooks, null);
+
+    private static void InvokeAll(Dictionary<string, ConfigHookFunc> hooks, object arg)
+    {
+      foreach (ConfigHookFunc hook in hooks.Values.ToArray())
+      {
+        try
+        {
+          hook?.Invoke(new[] { arg });
+        }
+        catch (Exception e)
+        {
+          Logger.Default.Warning($"Config hook failed: {e.Message}");
+        }
+      }
+    }
   }
-
-
-
 }

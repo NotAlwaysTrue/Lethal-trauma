@@ -3,12 +3,10 @@ using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Linq;
+
 using Barotrauma;
-using System.Xml;
-using System.Xml.Linq;
-using System.IO;
-using System.Text;
 using Barotrauma.Networking;
+using Lethaltrauma;
 
 namespace BaroJunk
 {
@@ -16,6 +14,7 @@ namespace BaroJunk
   public partial class ConfigCore
   {
     public string NetHeader => ID;
+
     public void NetEncode(IWriteMessage msg)
     {
       foreach (ConfigEntry entry in this.GetEntriesRec())
@@ -40,15 +39,9 @@ namespace BaroJunk
       Manager.RecievedConfigSync();
     }
 
-
     public SimpleResult Ask()
     {
       if (!Facades.NetFacade.IsMultiplayer) return SimpleResult.Failure("It's not multiplayer");
-
-      if (Facades.NetFacade.IsClient)
-      {
-        Facades.NetFacade.ClientSend(NetHeader + "_ask");
-      }
       return SimpleResult.Success();
     }
 
@@ -56,17 +49,12 @@ namespace BaroJunk
     {
       if (!Facades.NetFacade.IsMultiplayer) return SimpleResult.Failure("It's not multiplayer");
 
-      if (Facades.NetFacade.IsClient)
+      if (Facades.NetFacade.IsClient && !Facades.NetFacade.DoIHavePermissions())
       {
-        if (!Facades.NetFacade.DoIHavePermissions()) return SimpleResult.Failure(Facades.NetFacade.DontHavePermissionsString);
+        return SimpleResult.Failure(Facades.NetFacade.DontHavePermissionsString);
+      }
 
-        Facades.NetFacade.ClientEncondeAndSend(NetHeader + "_sync", this);
-      }
-      else
-      {
-        if (!Facades.NetFacade.IsMultiplayer) return SimpleResult.Failure("It's not multiplayer");
-        Facades.NetFacade.ServerEncondeAndBroadcast(NetHeader + "_sync", this);
-      }
+      ConfigSetting.Instance.IsDirty = true;
       return SimpleResult.Success();
     }
   }

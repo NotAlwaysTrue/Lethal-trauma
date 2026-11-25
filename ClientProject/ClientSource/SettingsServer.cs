@@ -38,16 +38,16 @@ namespace Lethaltrauma
       {
         string json = reader.ReadToEnd();
         Config config = JsonSerializer.Deserialize<Config>(json);
-        config.CopyTo(Mod.Config);
-        Mod.Config.GetReactiveCore().RaiseUpdated();
-        Mod.Config.GetCore().Sync();
+        config.CopyTo(Plugin.Config);
+        Plugin.Config.GetReactiveCore().RaiseUpdated();
+        Plugin.Config.GetCore().Sync();
       }
 
       return "bruh";
     }
 
     public string GetConfig(HttpListenerRequest request)
-      => JsonSerializer.Serialize(Mod.Config);
+      => JsonSerializer.Serialize(Plugin.Config);
 
     public string GetServerID(HttpListenerRequest request)
     {
@@ -57,7 +57,7 @@ namespace Lethaltrauma
     public void Start()
     {
       HttpServer = new HttpServer(Port);
-      HttpServer.ServeStatic(new DirectoryInfo(Path.Combine(Mod.Package.Dir, "Web Root")));
+      HttpServer.ServeStatic(new DirectoryInfo(Path.Combine(Plugin.Package.Dir, "Web Root")));
       HttpServer.Post["/SetConfig"] = SetConfig;
       HttpServer.Get["/GetConfig"] = GetConfig;
       HttpServer.Get["/GetServerID"] = GetServerID;

@@ -36,7 +36,7 @@ namespace Lethaltrauma
       if (
         attacker != null && attacker != _ &&
         (
-          !Mod.Config.AllowFriendlyFire ||
+          !Plugin.Config.AllowFriendlyFire ||
           GameMain.NetworkMember != null && !GameMain.NetworkMember.ServerSettings.AllowFriendlyFire
         )
       )
@@ -64,7 +64,7 @@ namespace Lethaltrauma
 
       if (SharedState.fromRangedWeapon == true)
       {
-        damageMultiplier = Mod.Config.RangedWeaponDamage;
+        damageMultiplier = Plugin.Config.RangedWeaponDamage;
       }
 
       bool wasDead = _.IsDead;
@@ -116,7 +116,7 @@ namespace Lethaltrauma
         hitLimb.ApplyStatusEffects(ActionType.OnDamaged, 1.0f);
       }
 #if CLIENT
-      if (_.Params.UseBossHealthBar && Character.Controlled != null && Character.Controlled.teamID == attacker?.teamID)
+      if (_.Params.UseBossHealthBar && Character.Controlled != null && Character.Controlled.TeamID == attacker?.TeamID)
       {
           CharacterHUD.ShowBossHealthBar(_, attackResult.Damage);
       }

@@ -21,7 +21,7 @@ namespace Lethaltrauma
 
     public static void Character_Constructor_Postfix(Character __instance)
     {
-      if (Mod.Config == null || !Mod.Config.OverrideHealthMult) return;
+      if (Plugin.Config == null || !Plugin.Config.OverrideHealthMult) return;
       Utils.RunWithDelay(() => SetHealthMultiplier(__instance), 100);
     }
 
@@ -29,7 +29,7 @@ namespace Lethaltrauma
     {
       foreach (Character character in Character.CharacterList)
       {
-        if (Mod.Config.OverrideHealthMult)
+        if (Plugin.Config.OverrideHealthMult)
         {
           SetHealthMultiplier(character);
         }
@@ -46,16 +46,16 @@ namespace Lethaltrauma
       {
         if (character.TeamID == CharacterTeamType.Team1)
         {
-          character.HumanPrefabHealthMultiplier = Mod.Config.CrewHumanHealth;
+          character.HumanPrefabHealthMultiplier = Plugin.Config.CrewHumanHealth;
         }
         else
         {
-          character.HumanPrefabHealthMultiplier = Mod.Config.EnemyHumanHealth;
+          character.HumanPrefabHealthMultiplier = Plugin.Config.EnemyHumanHealth;
         }
       }
       else
       {
-        character.HumanPrefabHealthMultiplier = Mod.Config.MonsterHealth;
+        character.HumanPrefabHealthMultiplier = Plugin.Config.MonsterHealth;
       }
     }
     public static void ResetHealthMultiplier(Character character)

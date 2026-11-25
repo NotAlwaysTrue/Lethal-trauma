@@ -31,13 +31,13 @@ namespace Lethaltrauma
 
     public static bool CampaignMode_OutpostNPCAttacked_Prefix(Character npc, Character attacker, AttackResult attackResult)
     {
-      if (Mod.Config?.NoReputationLossInMask == true && attacker.HideFace) return false;
+      if (Plugin.Config?.NoReputationLossInMask == true && attacker.HideFace) return false;
       return true;
     }
 
     public static bool HumanAIController_ApplyStealingReputationLoss_Prefix(Item item)
     {
-      if (Mod.Config?.NoReputationLossInMask == true && Character.Controlled?.HideFace == true) return false;
+      if (Plugin.Config?.NoReputationLossInMask == true && Character.Controlled?.HideFace == true) return false;
       return true;
     }
 
@@ -77,7 +77,7 @@ namespace Lethaltrauma
 
         if (GameMain.GameSession?.Campaign?.Map?.CurrentLocation?.Reputation != null && character.IsPlayer)
         {
-          if (Mod.Config == null || !Mod.Config.NoReputationLossInMask || !character.HideFace)
+          if (Plugin.Config == null || !Plugin.Config.NoReputationLossInMask || !character.HideFace)
           {
             var reputationLoss = damageAmount * Reputation.ReputationLossPerWallDamage;
             GameMain.GameSession.Campaign.Map.CurrentLocation.Reputation.AddReputation(-reputationLoss, Reputation.MaxReputationLossFromWallDamage);

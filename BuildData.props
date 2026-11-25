@@ -4,6 +4,7 @@
     IMPORTANT: Don't make use of special (ie: spaces / : ; , \ < > ?) (periods "." are good) and non-english characters in the ModName.
      -->
     <ModName>Lethaltrauma</ModName>
+    <ModVersion>2.0.1</ModVersion>
     <RepositoryURL></RepositoryURL>
 
     <!-- 

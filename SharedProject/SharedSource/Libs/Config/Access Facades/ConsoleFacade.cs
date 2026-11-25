@@ -1,33 +1,23 @@
 using System;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Linq;
 
 using Barotrauma;
-using HarmonyLib;
-using Microsoft.Xna.Framework;
-using Barotrauma.Networking;
+using Barotrauma.Plugins;
+using Lethaltrauma;
 
 namespace BaroJunk
 {
   public interface IConsoleFacade
   {
-    public void Remove(DebugConsole.Command command);
-    public void Insert(DebugConsole.Command command);
-    public void Execute(string command);
+    public void Register(string name, string help, Action<string[]> onExecute, Func<string[][]> hints);
+    public void Deregister(string name);
   }
 
   public class ConsoleFacade : IConsoleFacade
   {
-    public void Remove(DebugConsole.Command command)
-      => DebugConsole.Commands.Remove(command);
+    public void Register(string name, string help, Action<string[]> onExecute, Func<string[][]> hints)
+      => Plugin.RegisterCommand(name, help, CommandFlags.None, onExecute, hints);
 
-    public void Insert(DebugConsole.Command command)
-      => DebugConsole.Commands.Insert(0, command);
-    public void Execute(string command)
-      => DebugConsole.ExecuteCommand(command);
+    public void Deregister(string name)
+      => Plugin.DeregisterCommand(name);
   }
-
 }

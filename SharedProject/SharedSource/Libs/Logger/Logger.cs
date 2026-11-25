@@ -9,6 +9,7 @@ using Barotrauma;
 using Microsoft.Xna.Framework;
 using System.IO;
 using System.Text;
+using Lethaltrauma;
 
 namespace BaroJunk
 {
@@ -123,13 +124,13 @@ namespace BaroJunk
 
     private void _Print(object msg, Color color)
     {
-      LuaCsLogger.LogMessage(Serializer.Serialize(msg), color * 0.8f, color);
+      Plugin.DebugConsole?.NewMessage(Serializer.Serialize(msg), color);
     }
 
     private void _PrintFilePath(Color color, string source, int lineNumber)
     {
       var fi = new FileInfo(source);
-      LuaCsLogger.LogMessage($"{fi.Directory.Name}/{fi.Name}:{lineNumber}", color * 0.8f, color);
+      Plugin.DebugConsole?.NewMessage($"{fi.Directory.Name}/{fi.Name}:{lineNumber}", color);
     }
 
     public void LogVars(object arg1,

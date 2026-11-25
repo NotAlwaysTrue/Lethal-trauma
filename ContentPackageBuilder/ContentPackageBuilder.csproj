@@ -29,16 +29,19 @@
       <ModFiles Include="$(MSBuildThisFileDirectory)filelist.xml" />
       <ModFiles Include="$(MSBuildThisFileDirectory)PluginInfo.xml" />
       <ModContentFiles Include="$(MSBuildThisFileDirectory)Content\**\*" />
+      <WebRootFiles Include="$(MSBuildThisFileDirectory)../Web Root\**\*" />
 
       <ModFilesDest Include="@(ModFiles->'$(ModDeployDir)\$(ModName)\%(Filename)%(Extension)')" />
     </ItemGroup>
 
     <Copy SourceFiles="@(ModFiles)" DestinationFolder="$(ModDeployDir)\$(ModName)" SkipUnchangedFiles="true" />
 
+    <Copy SourceFiles="@(WebRootFiles)" DestinationFiles="@(WebRootFiles->'$(ModDeployDir)\$(ModName)\Web Root\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 
     <!-- <Copy SourceFiles="@(ModContentFiles)" DestinationFiles="@(ModContentFiles->'$(ModDeployDir)\$(ModName)\Content\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" /> -->
 
     <!-- Replace %ModName% with the actual mod name -->
     <ReplaceTokenInFile FilePath="%(ModFilesDest.Identity)" Token="%ModName%" Value="$(ModName)" />
+    <ReplaceTokenInFile FilePath="%(ModFilesDest.Identity)" Token="%ModVersion%" Value="$(ModVersion)" />
   </Target>
 </Project>

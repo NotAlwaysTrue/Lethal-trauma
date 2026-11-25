@@ -21,8 +21,8 @@ namespace Lethaltrauma
 
     public static void Character_Constructor_Postfix(Character __instance)
     {
-      if (Mod.Config == null) return;
-      __instance.CharacterHealth.PressureKillDelay = Mod.Config.PressureKillDelay;
+      if (Plugin.Config == null) return;
+      __instance.CharacterHealth.PressureKillDelay = Plugin.Config.PressureKillDelay;
     }
 
     public static float GlobalPressureKillDelay
