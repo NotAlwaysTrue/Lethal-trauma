@@ -39,29 +39,29 @@ namespace Lethaltrauma
     #region Health
 
     public static readonly BooleanSetting OverrideHealthMult =
-      Bool(nameof(OverrideHealthMult), false, "Override health multipliers");
+      Bool(nameof(OverrideHealthMult), false, "Override health multipliers", HealthMultipliers_Patches.GlobalUpdateHealthMultipliers);
 
     public static readonly FloatSetting CrewHumanHealth =
-      Float(nameof(CrewHumanHealth), 1.0f, "Crew human health multiplier");
+      Float(nameof(CrewHumanHealth), 1.0f, "Crew human health multiplier", onChanged: HealthMultipliers_Patches.GlobalUpdateHealthMultipliers);
 
     public static readonly FloatSetting EnemyHumanHealth =
-      Float(nameof(EnemyHumanHealth), 1.0f, "Enemy human health multiplier");
+      Float(nameof(EnemyHumanHealth), 1.0f, "Enemy human health multiplier", onChanged: HealthMultipliers_Patches.GlobalUpdateHealthMultipliers);
 
     public static readonly FloatSetting MonsterHealth =
-      Float(nameof(MonsterHealth), 1.0f, "Monster health multiplier");
+      Float(nameof(MonsterHealth), 1.0f, "Monster health multiplier", onChanged: HealthMultipliers_Patches.GlobalUpdateHealthMultipliers);
 
     #endregion
 
     #region Aim
 
     public static readonly BooleanSetting OverrideAim =
-      Bool(nameof(OverrideAim), false, "Override bot aim");
+      Bool(nameof(OverrideAim), false, "Override bot aim", BotAim_Patches.GlobalAimUpdate);
 
     public static readonly FloatSetting AimSpeed =
-      Float(nameof(AimSpeed), 1.0f, "Aim speed");
+      Float(nameof(AimSpeed), 1.0f, "Aim speed", onChanged: BotAim_Patches.GlobalAimUpdate);
 
     public static readonly FloatSetting AimAccuracy =
-      Float(nameof(AimAccuracy), 1.0f, "Aim accuracy");
+      Float(nameof(AimAccuracy), 1.0f, "Aim accuracy", onChanged: BotAim_Patches.GlobalAimUpdate);
 
     #endregion
 
@@ -71,7 +71,8 @@ namespace Lethaltrauma
       Bool(nameof(NoReputationLossInMask), false, "No reputation loss while wearing a mask");
 
     public static readonly FloatSetting PressureKillDelay =
-      Float(nameof(PressureKillDelay), 5.0f, "Pressure kill delay", min: 0.0f, max: 60.0f, step: 0.5f);
+      Float(nameof(PressureKillDelay), 5.0f, "Pressure kill delay", min: 0.0f, max: 60.0f, step: 0.5f,
+        onChanged: () => PressureKillDelay_Patches.GlobalPressureKillDelay = PressureKillDelay.Value);
 
     public static readonly BooleanSetting AllowFriendlyFire =
       Bool(nameof(AllowFriendlyFire), true, "Allow friendly fire");
@@ -147,31 +148,11 @@ namespace Lethaltrauma
       }
     }
 
-    public static object[] Snapshot()
-    {
-      object[] snapshot = new object[All.Count];
-      for (int i = 0; i < All.Count; i++)
-      {
-        snapshot[i] = GetValue(All[i].Setting);
-      }
-      return snapshot;
-    }
-
-    public static bool HasChanged(object[] snapshot)
-    {
-      if (snapshot is null || snapshot.Length != All.Count) return true;
-
-      for (int i = 0; i < All.Count; i++)
-      {
-        if (!Equals(GetValue(All[i].Setting), snapshot[i])) return true;
-      }
-      return false;
-    }
-
     #region Factories
 
-    private static FloatSetting Float(string name, float defaultValue, string label, float min = 0.0f, float max = MultiplierMax, float step = MultiplierStep)
-      => new FloatSetting((IdentifierPrefix + name).ToIdentifier(), defaultValue, label)
+    private static FloatSetting Float(string name, float defaultValue, string label, float min = 0.0f, float max = MultiplierMax, float step = MultiplierStep, Action onChanged = null)
+    {
+      ObservableFloatSetting result = new ObservableFloatSetting((IdentifierPrefix + name).ToIdentifier(), defaultValue, label)
       {
         Range = new Vector2(min, max),
         StepValue = step,
@@ -180,13 +161,24 @@ namespace Lethaltrauma
         IsAllowedToSet = (setting, client) => Plugin.HasConfigPermission(client)
       };
 
-    private static BooleanSetting Bool(string name, bool defaultValue, string label)
-      => new BooleanSetting((IdentifierPrefix + name).ToIdentifier(), defaultValue, label)
+      if (onChanged is not null) result.Changed += onChanged;
+
+      return result;
+    }
+
+    private static BooleanSetting Bool(string name, bool defaultValue, string label, Action onChanged = null)
+    {
+      ObservableBooleanSetting result = new ObservableBooleanSetting((IdentifierPrefix + name).ToIdentifier(), defaultValue, label)
       {
         ShowInUI = true,
         SyncMode = SettingSyncMode.ServerAuthority,
         IsAllowedToSet = (setting, client) => Plugin.HasConfigPermission(client)
       };
+
+      if (onChanged is not null) result.Changed += onChanged;
+
+      return result;
+    }
 
     #endregion
   }

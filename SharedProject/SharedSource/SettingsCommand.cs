@@ -58,8 +58,6 @@ namespace Lethaltrauma
         return;
       }
 
-      Plugin.ApplySettings();
-
       Plugin.DebugConsole.NewMessage($"{args[0]} = {Settings.GetValue(target)}");
     }
 

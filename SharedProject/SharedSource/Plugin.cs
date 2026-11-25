@@ -17,33 +17,16 @@ namespace Lethaltrauma
   {
     public static readonly IDebugConsole DebugConsole = PluginServiceProvider.GetService<IDebugConsole>();
     public static readonly ISettingsService SettingsService = PluginServiceProvider.GetService<ISettingsService>();
-    public static readonly ISimpleHookService HookService = PluginServiceProvider.GetService<ISimpleHookService>();
-
-    public static Plugin Instance { get; private set; }
-
-    private PluginOnPreUpdateDelegate onPreUpdate;
-    private object[] settingsSnapshot;
-    private float settingsCheckTimer;
-
-    private const float SettingsCheckInterval = 0.25f;
 
     public static Harmony Harmony { get; private set; }
 
     public void Init()
     {
-      Instance = this;
-
       Harmony = PluginServiceProvider.GetService<IHarmonyProvider>().GetHarmony();
 
       DebugConsole.NewMessage("Plugin loaded", Color.Lime);
 
       Settings.RegisterAll(SettingsService);
-
-      settingsSnapshot = Settings.Snapshot();
-      GlobalUpdate();
-
-      onPreUpdate = OnPreUpdate;
-      HookService.RegisterHook(onPreUpdate);
 
       SettingsCommand.Register();
 
@@ -59,40 +42,10 @@ namespace Lethaltrauma
     {
       SettingsCommand.Deregister();
 
-      if (onPreUpdate is not null) HookService.DeregisterHook(onPreUpdate);
-      onPreUpdate = null;
-
       DisposeProjectSpecific();
       Harmony?.UnpatchSelf();
       Harmony = null;
-      Instance = null;
       DebugConsole.NewMessage("Plugin unloaded", Color.Red);
-    }
-
-    private void OnPreUpdate(float deltaTime)
-    {
-      settingsCheckTimer -= deltaTime;
-      if (settingsCheckTimer > 0f) return;
-      settingsCheckTimer = SettingsCheckInterval;
-
-      if (!Settings.HasChanged(settingsSnapshot)) return;
-
-      ApplySettings();
-    }
-
-    public static void ApplySettings()
-    {
-      if (Instance is null) return;
-
-      Instance.settingsSnapshot = Settings.Snapshot();
-      GlobalUpdate();
-    }
-
-    public static void GlobalUpdate()
-    {
-      BotAim_Patches.GlobalAimUpdate();
-      HealthMultipliers_Patches.GlobalUpdateHealthMultipliers();
-      PressureKillDelay_Patches.GlobalPressureKillDelay = Settings.PressureKillDelay.Value;
     }
 
     public void PatchAll()
