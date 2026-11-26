@@ -5,8 +5,7 @@
 
       PluginInfo.xml : fully regenerated from $(ModName) and the bin\<Platform>\<Client|Server>\ layout.
                        Do not edit it by hand - it is overwritten on every build.
-      filelist.xml   : the %ModName% token and the ContentPackage name attribute are kept in sync
-                       with $(ModName). Everything else is left untouched.
+      filelist.xml   : the %ModName% token is replaced with $(ModName). Everything else is left untouched.
   -->
 
   <UsingTask TaskName="GenerateModPackageFiles" TaskFactory="RoslynCodeTaskFactory"
@@ -18,7 +17,8 @@
     </ParameterGroup>
 
     <Task>
-      <Code Type="Fragment" Language="cs"><![CDATA[
+      <Code Type="Fragment" Language="cs">
+<![CDATA[
 char pct = (char)37;
 string modDir = pct + "ModDir" + pct;
 string modNameToken = pct + "ModName" + pct;
@@ -40,6 +40,7 @@ foreach (string platform in platforms)
     if (platform != platforms[platforms.Length - 1]) sb.Append('\n');
 }
 sb.Append("</PluginInfos>").Append('\n');
+
 string pluginInfo = sb.ToString();
 string fileList = null;
 if (System.IO.File.Exists(FileListPath))

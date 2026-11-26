@@ -8,13 +8,12 @@
   -->
   <PropertyGroup>
     <!--
-      Absolute path to the Barotrauma executable. Used by the "Launch Barotrauma" launch
-      profile in PluginToolbox/Properties/launchSettings.json, and its folder is used to
-      locate Barotrauma.dll / DedicatedServer.dll and the game's dependency assemblies.
+      Absolute path to the Barotrauma executable. Only used by the "Launch Barotrauma"
+      launch profile in PluginToolbox/Properties/launchSettings.json.
 
       If this file is missing, BuildData.props falls back to
       <repo>\..\..\Barotrauma.exe, which assumes the repository sits directly in LocalMods.
     -->
-    <BarotraumaExePath>E:\SteamLibrary\steamapps\common\Barotrauma\Barotrauma.exe</BarotraumaExePath>
+    <BarotraumaExePath><Replace with your Barotrauma Game Dir>\Barotrauma.exe</BarotraumaExePath>
   </PropertyGroup>
 </Project>

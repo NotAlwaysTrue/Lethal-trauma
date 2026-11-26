@@ -1,4 +1,4 @@
-namespace PluginToolbox;
+﻿namespace PluginToolbox;
 
 internal static class Program
 {
@@ -7,7 +7,7 @@ internal static class Program
         get
         {
             return Path.GetFullPath(
-                Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location)!, "..", "..", "..", ".."));
+                Path.Combine(Path.GetDirectoryName(typeof(Program).Assembly.Location)!, "..", "..", "..", "..", ".."));
         }
     }
 
@@ -43,12 +43,12 @@ internal static class Program
         }
 
         List<(string ProjectPath, Runtime Runtime)> projects = [
-            ($@"{ProjectRoot}\ClientProject\WindowsClient.csproj", Runtime.Windows),
-            ($@"{ProjectRoot}\ClientProject\LinuxClient.csproj", Runtime.Linux),
-            ($@"{ProjectRoot}\ClientProject\MacClient.csproj", Runtime.Mac),
-            ($@"{ProjectRoot}\ServerProject\WindowsServer.csproj", Runtime.Windows),
-            ($@"{ProjectRoot}\ServerProject\LinuxServer.csproj", Runtime.Linux),
-            ($@"{ProjectRoot}\ServerProject\MacServer.csproj", Runtime.Mac)
+            ($@"{ProjectRoot}\CsProjectSource\ClientProject\WindowsClient.csproj", Runtime.Windows),
+            ($@"{ProjectRoot}\CsProjectSource\ClientProject\LinuxClient.csproj", Runtime.Linux),
+            ($@"{ProjectRoot}\CsProjectSource\ClientProject\MacClient.csproj", Runtime.Mac),
+            ($@"{ProjectRoot}\CsProjectSource\ServerProject\WindowsServer.csproj", Runtime.Windows),
+            ($@"{ProjectRoot}\CsProjectSource\ServerProject\LinuxServer.csproj", Runtime.Linux),
+            ($@"{ProjectRoot}\CsProjectSource\ServerProject\MacServer.csproj", Runtime.Mac)
         ];
 
         bool buildFailed = false;

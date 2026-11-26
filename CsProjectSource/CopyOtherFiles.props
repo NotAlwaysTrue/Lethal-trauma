@@ -1,7 +1,7 @@
 <Project>
   <Target Name="CopyOtherFiles" AfterTargets="Build">
     <ItemGroup>
-      <!--
+      <!-- 
       Add any files you need copied from the output folder
       <Files Include="MyLibrary.dll" />
       <Files Include="MyLibrary.pdb" />
