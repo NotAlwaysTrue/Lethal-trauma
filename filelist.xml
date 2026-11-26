@@ -1,2 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<contentpackage name="Lethaltrauma" modversion="2.0.1" corepackage="False" steamworkshopid="3435041793" gameversion="1.12.7.0" />
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPackage name="Lethaltrauma" modversion="3.0.0" corepackage="False" steamworkshopid="3435041793" gameversion="1.15.33.0">
+  <PluginInfo file="%ModDir%/PluginInfo.xml" />
+</ContentPackage>
